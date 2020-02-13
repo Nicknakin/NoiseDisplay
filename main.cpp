@@ -42,7 +42,7 @@ int main(int argc, char** argv){
     
     const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
     
-    Perlin ng{std::vector<int>{255,255,255}};
+    Perlin ng{std::vector<int>{255,255,5}};
 
     std::vector<sf::RectangleShape*> blocks{};
     blocks.resize(gridWidth*gridHeight);
@@ -57,7 +57,7 @@ int main(int argc, char** argv){
 
     std::vector<std::thread> activeThreads{};
     unsigned threads = std::thread::hardware_concurrency();
-    if(threads == 0)
+    if(threads == 0 || true)
         setBlocks(blocks, 0, blocks.size(), config, &ng);
     else{
         for(int i = 0; i < threads; i++){
