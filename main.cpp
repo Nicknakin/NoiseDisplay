@@ -33,12 +33,11 @@ void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting con
     }
 }
 
-void updateBlocks(std::vector<Cell*> blocks, sf::RenderWindow *window, int start, int end, Perlin *ngp, float z){
+void updateBlocks(std::vector<Cell*> blocks, int start, int end, Perlin *ngp, float z){
     auto ng = *ngp;
     for(auto [block, i] = std::tuple{blocks[start], start}; i < end; block = blocks[i++]){
             sf::Uint8 col = 255*ng(std::vector<float>{block->getNoiseX(), block->getNoiseY(), z});
             block->setFillColor(sf::Color{col, col, col}); 
-            window->draw(*block);
         }
 }
 
@@ -78,24 +77,27 @@ int main(int argc, char** argv){
         activeThreads[i].join();
     }   
     activeThreads.resize(0);
-   
+
     float z = 0.0f; 
 
     while (window.isOpen()) {
         window.clear();
         if(threads == 0)
-            updateBlocks(blocks, &window, 0, blocks.size(), &ng, z);
+            updateBlocks(blocks, 0, blocks.size(), &ng, z);
         else{
             for(int i = 0; i < threads; i++){
-                activeThreads.push_back(std::thread(updateBlocks, blocks, &window, blocks.size()/threads*i, blocks.size()/threads*(i+1), &ng, z));
+                activeThreads.push_back(std::thread(updateBlocks, blocks, blocks.size()/threads*i, blocks.size()/threads*(i+1), &ng, z));
             }
         }   
         for(int i = 0; i < activeThreads.size(); i++){
             activeThreads[i].join();
         }   
         activeThreads.resize(0);
-        z += 0.01f;
-        
+        z += 0.05f;
+   
+        for(auto block : blocks){
+            window.draw(*block);
+        }     
         window.display();
     }
     std::cout << std::endl;
