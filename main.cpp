@@ -26,14 +26,19 @@ void setBlocks(std::vector<sf::RectangleShape*> blocks, int start, int end, stru
         blocks[i]->setPosition(x, y);
         blocks[i]->setSize(sf::Vector2f{(float) config.sideLength, (float) config.sideLength});
         float xNoise = x/((float) config.width)*25, yNoise = y/((float) config.height)*25;
-        float noise = ng(std::vector<float>{xNoise, yNoise, 0.5f});
-        unsigned int col = noise*255;
+        float noise = ng(std::vector<float>{xNoise, yNoise, 0.f});
+        sf::Uint8 col{(unsigned char) (noise*255)};
         blocks[i]->setFillColor(sf::Color{col, col, col});
     }
 }
 
 int main(int argc, char** argv){
-    setting config = {(argc >= 2)? std::stoi(argv[1]): 1920/2, (argc >= 3)? std::stoi(argv[2]): 1080/2, (argc >= 4)? std::stoi(argv[3]): 10, (argc >= 5)? std::stoi(argv[4]): 60};
+    setting config = {
+    /*width*/       (argc >= 2)? std::stoi(argv[1]): 800,
+    /*height*/      (argc >= 3)? std::stoi(argv[2]): 800,
+    /*sideLength*/  (argc >= 4)? std::stoi(argv[3]): 1,
+    /*speed*/       (argc >= 5)? std::stoi(argv[4]): 60
+    };
     
     const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
     
