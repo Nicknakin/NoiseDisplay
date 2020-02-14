@@ -72,10 +72,12 @@ float Perlin::operator()(std::vector<float> pos){
     
     //Get Corners
     std::vector<int> topleft;
+    int currentVal = 0;
     topleft.resize(dimensions.size());
-    std::transform(pos.begin(), pos.end(), topleft.begin(), [](float coord) -> int { return (int) coord;});
+    std::transform(pos.begin(), pos.end(), topleft.begin(), [&](float coord) -> int { return ((int) coord)%dimensions[currentVal++];});
     auto bottomright = topleft;
-     std::transform(pos.begin(), pos.end(), bottomright.begin(), [](float coord) -> int { return (int) coord+1;});
+    currentVal = 0;
+     std::transform(pos.begin(), pos.end(), bottomright.begin(), [&](float coord) -> int { return (int) (coord+1)%dimensions[currentVal++];});
     auto corners = combineArrays(topleft, bottomright);
     std::vector<std::vector<int>> cornerVectors{};
     cornerVectors.resize(corners.size());
@@ -113,7 +115,7 @@ float Perlin::operator()(std::vector<float> pos){
     }
 
     //return
-    return std::max(0.0, std::min((dotProds[0]+2.4)/4.8, 1.0));
+    return std::max(0.0f, std::min((dotProds[0]+2.0f)/4.f, 1.0f));
 }
 
 //Return a combination of the two arrays which grow exponentially

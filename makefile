@@ -1,10 +1,10 @@
 CXX = g++ -O3
-CXXFLAGS = -std=c++14
+CXXFLAGS = -std=c++17
 
 oglflags = -lsfml-graphics -lsfml-window -lsfml-system -lpthread
 
-default: perlin.o main.o 
-	$(CXX) ${CXXFLAGS} -o defaultOut main.o perlin.o ${oglflags} 
+default: cell.o perlin.o main.o 
+	$(CXX) ${CXXFLAGS} -o defaultOut main.o perlin.o cell.o ${oglflags} 
 
 debug: 
 	$(CXX) ${CXXFLAGS} -g -Wall -o debugOut main.cpp perlin.cpp ${oglflags}
