@@ -29,15 +29,15 @@ void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting con
         sf::Uint8 col{(unsigned char) (noise*255)};
         blocks[i]->setNoiseX(xNoise);
         blocks[i]->setNoiseY(yNoise);
-        blocks[i]->setFillColor(sf::Color{col, col, col});
+        blocks[i]->setFillColor(sf::Color{col, 0, 0});
     }
 }
 
 void updateBlocks(std::vector<Cell*> blocks, int start, int end, Perlin *ngp, float z){
     auto ng = *ngp;
-    for(auto [block, i] = std::tuple{blocks[start], start}; i < end; block = blocks[i++]){
+    for(auto [block, i] = std::tuple{blocks[start], start}; i < end; block = blocks[++i]){
             sf::Uint8 col = 255*ng(std::vector<float>{block->getNoiseX(), block->getNoiseY(), z});
-            block->setFillColor(sf::Color{col, col, col}); 
+            block->setFillColor(sf::Color{col, 0, 0}); 
         }
 }
 
@@ -45,13 +45,13 @@ int main(int argc, char** argv){
     setting config = {
     /*width*/       (argc >= 2)? std::stoi(argv[1]): 800,
     /*height*/      (argc >= 3)? std::stoi(argv[2]): 800,
-    /*sideLength*/  (argc >= 4)? std::stoi(argv[3]): 1,
+    /*sideLength*/  (argc >= 4)? std::stoi(argv[3]): 5,
     /*speed*/       (argc >= 5)? std::stoi(argv[4]): 60
     };
     
     const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
     
-    Perlin ng{std::vector<int>{255,255,255}};
+    Perlin ng{std::vector<int>{25,25,25}};
 
     std::vector<Cell*> blocks{};
     blocks.resize(gridWidth*gridHeight);
@@ -93,7 +93,7 @@ int main(int argc, char** argv){
             activeThreads[i].join();
         }   
         activeThreads.resize(0);
-        z += 0.05f;
+        z += 0.01f;
    
         for(auto block : blocks){
             window.draw(*block);
