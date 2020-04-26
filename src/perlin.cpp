@@ -70,28 +70,30 @@ float Perlin::operator()(std::vector<float> pos) {
     shortenedPos.resize(pos.size());
     std::transform(pos.begin(), pos.end(), shortenedPos.begin(), [](const float& coord) -> float {return coord-floor(coord);});
 
+    int currentVal = 0;
     //Get Corners
     std::vector<int> topleft;
-    int currentVal = 0;
     topleft.resize(dimensions.size());
     std::transform(pos.begin(), pos.end(), topleft.begin(), [&](float coord) -> int { return ((int) coord)%dimensions[currentVal++];});
-    auto bottomright = topleft;
-    currentVal = 0;
-    std::transform(pos.begin(), pos.end(), bottomright.begin(), [&](float coord) -> int { return (int) (coord+1)%dimensions[currentVal++];});
-    auto corners = combineArrays(topleft, bottomright);
+
     std::vector<std::vector<int>> cornerVectors{};
-    cornerVectors.resize(corners.size());
-    std::transform(corners.begin(), corners.end(), cornerVectors.begin(),
-    [&](auto corner) -> std::vector<int> {
-        for(int i = 0; i < corner.size(); i++) {
-            corner[i] *= dimensionLengths[i];
-        }
-        return spacedVectors[nodes[std::accumulate(corner.begin(), corner.end(), 0)]];
-    });
+    cornerVectors.resize(subVector.size());
+    std::transform(subVector.begin(), subVector.end(), cornerVectors.begin(), 
+        [&](std::vector<int> corner) -> std::vector<int> {
+            int cnt = 0;
+            std::transform(corner.begin(), corner.end(), corner.begin(), 
+                    [&] (int num) -> int {
+                        int temp = (num + topleft[cnt])*dimensionLengths[cnt];
+                        cnt++;
+                        return temp;
+                    });
+            return spacedVectors[nodes[std::accumulate(corner.begin(), corner.end(), 0)]];
+        });
+        
 
     //Dot Products
     std::vector<std::vector<float>> distFromCorner{};
-    distFromCorner.resize(cornerVectors.size(), shortenedPos);
+    distFromCorner.resize(subVector.size(), shortenedPos);
     for(int i = 0; i < distFromCorner.size(); i++) {
         for(int j = 0; j < distFromCorner[i].size(); j++) {
             distFromCorner[i][j] -= subVector[i][j];
@@ -99,7 +101,7 @@ float Perlin::operator()(std::vector<float> pos) {
     }
 
     std::vector<float> dotProds{};
-    dotProds.resize(cornerVectors.size());
+    dotProds.resize(subVector.size());
     for(int i = 0; i < dotProds.size(); i++) {
         dotProds[i] = dot(distFromCorner[i], cornerVectors[i]);
     }

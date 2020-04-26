@@ -31,7 +31,7 @@ preprocess: CXXFLAGS+=-E
 preprocess: default
 
 debug: CXXFLAGS+=-g 
-debug: clean default 
+debug: clean all 
 
 ${TEST_OUT_DIR}/%.test: ${OBJ_FILES} ${TEST_DIR}/%.cpp 
 	$(CXX) ${CXXFLAGS} $^ -o $@ ${LDLIBS}
