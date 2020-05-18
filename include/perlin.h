@@ -6,6 +6,7 @@
 class Perlin {
 public:
     Perlin();
+    Perlin(std::initializer_list<int> dims);
     Perlin(std::vector<int> dimensions);
     Perlin(std::vector<int> dimensions, int seed);
     float operator()(std::vector<float> pos);

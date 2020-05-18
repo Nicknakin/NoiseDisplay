@@ -19,39 +19,6 @@ struct setting {
     const int speed;
 };
 
-void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting config, Perlin* ngp) {
-    Perlin& ng = *ngp;
-    const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
-    const float aspectRatio = (float) gridWidth / (float) gridHeight;
-    for(int i = start; i <end; i++) {
-        int x = i%(gridWidth)*config.sideLength, y = floor(i/gridWidth)*config.sideLength;
-        float xNoise = x/((float) config.width)*25, yNoise = y/((float) config.height)*25/aspectRatio;
-        float noise = ng(std::vector<float> {xNoise, yNoise, 0.f});
-        sf::Uint8 col{(unsigned char) (noise*255)};
-        blocks[i]->setNoiseX(xNoise);
-        blocks[i]->setNoiseY(yNoise);
-        blocks[i]->setFillColor(sf::Color{col, 0, 0});
-    }
-}
-
-void updateBlocks(std::vector<Cell*> blocks, int start, int end, Perlin *ngp, float z) {
-    auto ng = *ngp;
-    for(auto [block, i] = std::tuple{blocks[start], start}; i < end; block = blocks[++i]) {
-        sf::Uint8 val = 255*ng(std::vector<float> {block->getNoiseX(), block->getNoiseY(), z});
-        sf::Color thisCol;
-        if(val < 255/3) {
-            thisCol = sf::Color{0, 0, val};
-        } else if(val < 255*.4) {
-            thisCol = sf::Color{val/sqrt(2), val/sqrt(2), 0};
-        } else if(val < 255*3/4) {
-            thisCol = sf::Color{0, val, 0};
-        } else {
-            thisCol = sf::Color{val, val, val};
-        }
-        block->setFillColor(thisCol);
-    }
-}
-
 int main(int argc, char** argv) {
     setting config = {
         /*width*/       (argc >= 2)? std::stoi(argv[1]): 800,
@@ -62,7 +29,7 @@ int main(int argc, char** argv) {
 
     const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
 
-    Perlin ng{std::vector<int>{25,25,25}};
+    Perlin ng{25, 25, 25};
 
     std::vector<Cell*> blocks{};
     blocks.resize(gridWidth*gridHeight);
@@ -71,7 +38,7 @@ int main(int argc, char** argv) {
     sf::RenderWindow window(sf::VideoMode(config.width,config.height), "SFML Project");
     window.setFramerateLimit(config.speed);
 
-    for(int i = 0; i < blocks.size(); i++) {
+    for(int i = 0; i < (int) blocks.size(); i++) {
         blocks[i] = new Cell{(float) (i%gridWidth*config.sideLength), (float) (floor(i/gridWidth)*config.sideLength), float (config.sideLength)};
     }
 
@@ -80,11 +47,11 @@ int main(int argc, char** argv) {
     if(threads == 0)
         setBlocks(blocks, 0, blocks.size(), config, &ng);
     else {
-        for(int i = 0; i < threads; i++) {
+        for(int i = 0; i < (int) threads; i++) {
             activeThreads.push_back(std::thread(setBlocks, blocks, blocks.size()/threads*i, blocks.size()/threads*(i+1), config, &ng));
         }
     }
-    for(int i = 0; i < activeThreads.size(); i++) {
+    for(int i = 0; i < (int) activeThreads.size(); i++) {
         activeThreads[i].join();
     }
     activeThreads.resize(0);
@@ -101,11 +68,11 @@ int main(int argc, char** argv) {
         if(threads == 0)
             updateBlocks(blocks, 0, blocks.size(), &ng, z);
         else {
-            for(int i = 0; i < threads; i++) {
+            for(int i = 0; i < (int) threads; i++) {
                 activeThreads.push_back(std::thread(updateBlocks, blocks, blocks.size()/threads*i, blocks.size()/threads*(i+1), &ng, z));
             }
         }
-        for(int i = 0; i < activeThreads.size(); i++) {
+        for(int i = 0; i < (int) activeThreads.size(); i++) {
             activeThreads[i].join();
         }
         activeThreads.resize(0);

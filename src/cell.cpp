@@ -1,6 +1,6 @@
 #include "cell.h"
 
-Cell::Cell(float x, float y, float sideLength): x{x}, y{y}, sideLength{sideLength}, sf::RectangleShape(sf::Vector2<float>(sideLength, sideLength)) {
+Cell::Cell(float x, float y, float sideLength): sf::RectangleShape(sf::Vector2<float>(sideLength, sideLength)), x{x}, y{y}, sideLength{sideLength} {
     RectangleShape::setPosition(x, y);
 }
 
