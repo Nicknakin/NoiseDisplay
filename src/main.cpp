@@ -19,6 +19,29 @@ struct setting {
     const int speed;
 };
 
+void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting config, Perlin* ngp){
+    Perlin& ng = *ngp;
+    const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
+    const float aspectRatio = (float) gridWidth/ (float) gridHeight;
+    for(int i = start; i <end; i++){
+        int x = i%(gridWidth)*config.sideLength, y = floor(i/gridWidth)*config.sideLength;
+        float xNoise = x/((float) config.width)*25, yNoise = y/((float) config.height)*25/aspectRatio;
+        float noise = ng(std::vector<float>{xNoise, yNoise, 0.f});
+        sf::Uint8 col{(unsigned char) (noise*255)};
+        blocks[i]->setNoiseX(xNoise);
+        blocks[i]->setNoiseY(yNoise);
+        blocks[i]->setFillColor(sf::Color{col, col, col});
+    }
+}
+
+void updateBlocks(std::vector<Cell*> blocks, int start, int end, Perlin *ngp, float z){
+    auto ng = *ngp;
+    for(auto [block, i] = std::tuple{blocks[start], start}; i < end; block = blocks[++i]){
+            sf::Uint8 col = 255*ng(std::vector<float>{block->getNoiseX(), block->getNoiseY(), z});
+            block->setFillColor(sf::Color{col, 0, 0}); 
+        }
+}
+
 int main(int argc, char** argv) {
     setting config = {
         /*width*/       (argc >= 2)? std::stoi(argv[1]): 800,
