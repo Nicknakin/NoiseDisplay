@@ -9,7 +9,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "perlin.h"
+#include <perlin/perlin.h>
 #include "cell.h"
 
 struct setting {
@@ -26,7 +26,7 @@ void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting con
     for(int i = start; i <end; i++){
         int x = i%(gridWidth)*config.sideLength, y = floor(i/gridWidth)*config.sideLength;
         float xNoise = x/((float) config.width)*25, yNoise = y/((float) config.height)*25/aspectRatio;
-        float noise = ng(std::vector<float>{xNoise, yNoise, 0.f});
+        float noise = (ng.noise(std::vector<float>{xNoise, yNoise, 0.f})+1)/2;
         sf::Uint8 col{(unsigned char) (noise*255)};
         blocks[i]->setNoiseX(xNoise);
         blocks[i]->setNoiseY(yNoise);
@@ -37,8 +37,8 @@ void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting con
 void updateBlocks(std::vector<Cell*> blocks, int start, int end, Perlin *ngp, float z){
     auto ng = *ngp;
     for(auto [block, i] = std::tuple{blocks[start], start}; i < end; block = blocks[++i]){
-            sf::Uint8 col = 255*ng(std::vector<float>{block->getNoiseX(), block->getNoiseY(), z});
-            block->setFillColor(sf::Color{col, 0, 0}); 
+            sf::Uint8 col = 255*(ng(std::vector<float>{block->getNoiseX(), block->getNoiseY(), z})+1)/2;
+            block->setFillColor(sf::Color{col, col, col}); 
         }
 }
 

@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -Wall -I include/
+CXXFLAGS=-std=c++17 -Wall -I include/ -O3
 LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -pthread
 SRC_DIR=./src
 OBJ_DIR=./obj
