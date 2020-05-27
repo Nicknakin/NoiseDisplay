@@ -5,22 +5,22 @@
 
 class Cell: public sf::RectangleShape {
 public:
-    Cell(float x, float y, float sideLength);
+    Cell(double x, double y, double sideLength);
 
-    float getX();
-    float getY();
-    float getNoiseX();
-    float getNoiseY();
-    float getSideLength();
+    double getX();
+    double getY();
+    double getNoiseX();
+    double getNoiseY();
+    double getSideLength();
 
-    void setX(float x);
-    void setY(float y);
-    void setNoiseX(float x);
-    void setNoiseY(float y);
-    void setSideLength(float sideLength);
+    void setX(double x);
+    void setY(double y);
+    void setNoiseX(double x);
+    void setNoiseY(double y);
+    void setSideLength(double sideLength);
 
 private:
-    float x, y, noiseX, noiseY, sideLength;
+    double x, y, noiseX, noiseY, sideLength;
 
 };
 

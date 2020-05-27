@@ -7,6 +7,7 @@
 #include <thread>
 #include <vector>
 
+#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
 #include <perlin/perlin.h>
@@ -21,12 +22,11 @@ struct setting {
 
 void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting config, Perlin* ngp){
     Perlin& ng = *ngp;
-    const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
-    const float aspectRatio = (float) gridWidth/ (float) gridHeight;
+    const int gridWidth = config.width/config.sideLength;
     for(int i = start; i <end; i++){
         int x = i%(gridWidth)*config.sideLength, y = floor(i/gridWidth)*config.sideLength;
-        float xNoise = x/((float) config.width)*25, yNoise = y/((float) config.height)*25/aspectRatio;
-        float noise = (ng.noise(std::vector<float>{xNoise, yNoise, 0.f})+1)/2;
+        double xNoise = x*0.014, yNoise = y*0.014;
+        double noise = (ng(std::vector<double>{xNoise, yNoise, 0.0})+1)/2;
         sf::Uint8 col{(unsigned char) (noise*255)};
         blocks[i]->setNoiseX(xNoise);
         blocks[i]->setNoiseY(yNoise);
@@ -34,10 +34,10 @@ void setBlocks(std::vector<Cell*> blocks, int start, int end, struct setting con
     }
 }
 
-void updateBlocks(std::vector<Cell*> blocks, int start, int end, Perlin *ngp, float z){
+void updateBlocks(std::vector<Cell*> blocks, int start, int end, Perlin *ngp, double z){
     auto ng = *ngp;
     for(auto [block, i] = std::tuple{blocks[start], start}; i < end; block = blocks[++i]){
-            sf::Uint8 col = 255*(ng(std::vector<float>{block->getNoiseX(), block->getNoiseY(), z})+1)/2;
+            sf::Uint8 col = (int) (255*(ng(std::vector<double>{block->getNoiseX(), block->getNoiseY(), z})+1)/2);
             block->setFillColor(sf::Color{col, col, col}); 
         }
 }
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
     const int gridWidth = config.width/config.sideLength, gridHeight = config.height/config.sideLength;
 
-    Perlin ng{25, 25, 25};
+    Perlin ng{std::vector<int>{25, 25, 5 }, 3};
 
     std::vector<Cell*> blocks{};
     blocks.resize(gridWidth*gridHeight);
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     window.setFramerateLimit(config.speed);
 
     for(int i = 0; i < (int) blocks.size(); i++) {
-        blocks[i] = new Cell{(float) (i%gridWidth*config.sideLength), (float) (floor(i/gridWidth)*config.sideLength), float (config.sideLength)};
+        blocks[i] = new Cell{(double) (i%gridWidth*config.sideLength), (double) (floor(i/gridWidth)*config.sideLength), double (config.sideLength)};
     }
 
     std::vector<std::thread> activeThreads{};
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     }
     activeThreads.resize(0);
 
-    float z = 0.0f;
+    double z = 0.0f;
 
     while (window.isOpen()) {
         window.clear();
@@ -106,6 +106,10 @@ int main(int argc, char** argv) {
         }
         window.display();
     }
+    for(auto &v : blocks){
+        delete v;
+    }
+    blocks.clear();
     std::cout << std::endl;
     return 0;
 }

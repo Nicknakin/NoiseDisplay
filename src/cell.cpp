@@ -1,37 +1,37 @@
 #include "cell.h"
 
-Cell::Cell(float x, float y, float sideLength): sf::RectangleShape(sf::Vector2<float>(sideLength, sideLength)), x{x}, y{y}, sideLength{sideLength} {
+Cell::Cell(double x, double y, double sideLength): sf::RectangleShape(sf::Vector2<float>((float) sideLength, (float) sideLength)), x{x}, y{y}, sideLength{sideLength} {
     RectangleShape::setPosition(x, y);
 }
 
-float Cell::getX() {
+double Cell::getX() {
     return x;
 }
-float Cell::getY() {
+double Cell::getY() {
     return y;
 }
-float Cell::getNoiseX() {
+double Cell::getNoiseX() {
     return noiseX;
 }
-float Cell::getNoiseY() {
+double Cell::getNoiseY() {
     return noiseY;
 }
-float Cell::getSideLength() {
+double Cell::getSideLength() {
     return sideLength;
 }
 
-void Cell::setX(float x) {
+void Cell::setX(double x) {
     this->x = x;
 }
-void Cell::setY(float y) {
+void Cell::setY(double y) {
     this->y = y;
 }
-void Cell::setNoiseX(float x) {
+void Cell::setNoiseX(double x) {
     this->noiseX = x;
 }
-void Cell::setNoiseY(float y) {
+void Cell::setNoiseY(double y) {
     this->noiseY = y;
 }
-void Cell::setSideLength(float sideLength) {
+void Cell::setSideLength(double sideLength) {
     this->sideLength = sideLength;
 }
