@@ -10,7 +10,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <perlin/perlin.h>
+#include "perlin.h"
 #include "cell.h"
 
 struct setting {
